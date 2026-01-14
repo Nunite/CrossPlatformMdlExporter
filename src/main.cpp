@@ -12,9 +12,9 @@
 #include <objbase.h>
 #endif
 
-#include "image_writer.hpp"
-#include "mdl_model.hpp"
-#include "rasterizer.hpp"
+#include "CrossPlatformMdlExporter/image_writer.hpp"
+#include "CrossPlatformMdlExporter/mdl_model.hpp"
+#include "CrossPlatformMdlExporter/rasterizer.hpp"
 
 namespace
 {

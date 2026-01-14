@@ -7,10 +7,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(CrossPlatformMdlExporter
-    image_writer.cpp
-    main.cpp
-    mdl_model.cpp
-    rasterizer.cpp
+    src/image_writer.cpp
+    src/main.cpp
+    src/mdl_model.cpp
+    src/rasterizer.cpp
+)
+
+target_include_directories(CrossPlatformMdlExporter
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 if(MSVC)
@@ -23,4 +28,3 @@ if(WIN32)
   target_compile_definitions(CrossPlatformMdlExporter PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
   target_link_libraries(CrossPlatformMdlExporter PRIVATE windowscodecs)
 endif()
-

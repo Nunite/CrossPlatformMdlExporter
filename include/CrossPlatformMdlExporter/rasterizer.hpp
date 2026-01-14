@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "math.hpp"
-#include "mdl_model.hpp"
+#include "CrossPlatformMdlExporter/math.hpp"
+#include "CrossPlatformMdlExporter/mdl_model.hpp"
 
 enum class BackgroundPreset : uint32_t
 {

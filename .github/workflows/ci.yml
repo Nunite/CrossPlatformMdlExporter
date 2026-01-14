@@ -25,6 +25,10 @@ jobs:
         if: runner.os == 'Windows'
         run: cmake --build build --config Release
 
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path build/Release/CrossPlatformMdlExporter.exe -DestinationPath CrossPlatformMdlExporter-windows.zip -Force
+
       - name: Configure (Linux/macOS)
         if: runner.os != 'Windows'
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -32,3 +36,39 @@ jobs:
       - name: Build (Linux/macOS)
         if: runner.os != 'Windows'
         run: cmake --build build
+
+      - name: Package (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: zip -j CrossPlatformMdlExporter-${{ runner.os }}.zip build/CrossPlatformMdlExporter
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CrossPlatformMdlExporter-${{ runner.os }}
+          path: CrossPlatformMdlExporter-*.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: CrossPlatformMdlExporter-*
+          merge-multiple: true
+          path: dist
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: Nightly
+          draft: true
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          files: dist/*.zip
+          fail_on_unmatched_files: true

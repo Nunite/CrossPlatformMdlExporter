@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "math.hpp"
+#include "CrossPlatformMdlExporter/math.hpp"
 
 struct TextureRgba
 {

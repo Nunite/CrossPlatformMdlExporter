@@ -1,4 +1,4 @@
-#include "image_writer.hpp"
+#include "CrossPlatformMdlExporter/image_writer.hpp"
 
 #include <algorithm>
 #include <array>

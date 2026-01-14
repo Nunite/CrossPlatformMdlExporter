@@ -1,4 +1,4 @@
-#include "mdl_model.hpp"
+#include "CrossPlatformMdlExporter/mdl_model.hpp"
 
 #include <algorithm>
 #include <array>
@@ -8,7 +8,7 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "mdl_types.hpp"
+#include "CrossPlatformMdlExporter/mdl_types.hpp"
 
 namespace
 {

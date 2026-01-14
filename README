@@ -1,0 +1,103 @@
+CrossPlatformMdlExporter
+
+一个跨平台的命令行工具，用于读取 GoldSrc 的 .mdl（Half-Life Studio Model）并渲染缩略图，输出为 .tga 或 .png。
+
+特点
+
+- 纯 CPU 渲染，输出 RGBA 缩略图
+- 输出格式由输出文件扩展名决定：.tga / .png
+- .tga：跨平台
+- .png：仅 Windows（使用 WIC，链接 windowscodecs）
+
+目录结构
+
+- include/CrossPlatformMdlExporter/    对外头文件（使用 CrossPlatformMdlExporter/xxx.hpp 引用）
+- src/                                 可执行程序源码
+- .github/workflows/                   CI
+
+编译
+
+Windows (Visual Studio 2022 x64)：
+
+  cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+  cmake --build build --config Release
+
+如果你之前用其他生成器/平台配置过 build/，出现平台不匹配报错时，删除 build/ 后重试即可。
+
+Linux/macOS（Release）：
+
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
+
+运行
+
+基本用法：
+
+  CrossPlatformMdlExporter <input.mdl> <output.(png|tga)> [options]
+
+参数
+
+- <input.mdl>
+  - 输入的 GoldSrc Studio Model 文件（.mdl）
+  - 如果该 mdl 头部声明贴图数量为 0，程序会尝试读取同名后缀为 "T" 的贴图 mdl（例如 model.mdl 会尝试 modelT.mdl）
+
+- <output.(png|tga)>
+  - 输出文件路径，扩展名决定格式
+  - .tga：始终可用
+  - .png：仅 Windows 可用；在 Linux/macOS 上会写入失败
+  - 其他扩展名：会按 .tga 写出
+
+options
+
+- --width N
+  - 输出宽度（像素），默认 256
+  - 建议使用正整数
+
+- --height N
+  - 输出高度（像素），默认 256
+  - 建议使用正整数
+
+- --background VALUE
+  - 背景预设，默认 blue
+  - 支持：blue | green | transparent
+  - 也支持简写/数字：b|g|t 或 0|1|2
+
+- --verbose
+  - 输出更多模型与渲染统计信息到 stderr
+  - 包括 mesh/texture 统计、渲染三角形数量等
+
+示例
+
+1) 输出 TGA（跨平台）：
+
+  CrossPlatformMdlExporter input.mdl output.tga
+
+2) 输出 PNG（Windows）：
+
+  .\build\Release\CrossPlatformMdlExporter.exe input.mdl output.png
+
+3) 指定尺寸与透明背景：
+
+  CrossPlatformMdlExporter input.mdl thumb.tga --width 512 --height 512 --background transparent
+
+4) 打开 verbose 看统计：
+
+  CrossPlatformMdlExporter input.mdl thumb.tga --verbose
+
+常见问题
+
+- 提示 "Failed to load mdl"
+  - 确认输入文件是 GoldSrc Studio Model（版本/标识正确）
+  - 确认路径与文件权限正确
+
+- 在 Linux/macOS 输出 .png 失败
+  - 这是预期行为：当前 .png 写出仅在 Windows 上实现
+  - 替代方案：输出 .tga，然后用外部工具转换为 png
+
+- CMake 报平台不匹配（generator/platform changed）
+  - 删除 build/ 目录后重新 cmake 配置
+
+CI
+
+- CI 会在 Windows / Linux / macOS 构建并上传 zip 产物
+- main 分支 push 且全部通过后，会生成一个 Draft 的 Nightly Release，并附带这些 zip
