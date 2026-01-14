@@ -25,9 +25,9 @@ jobs:
         if: runner.os == 'Windows'
         run: cmake --build build --config Release
 
-      - name: Package (Windows)
+      - name: Stage artifact (Windows)
         if: runner.os == 'Windows'
-        run: Compress-Archive -Path build/Release/CrossPlatformMdlExporter.exe -DestinationPath CrossPlatformMdlExporter-windows.zip -Force
+        run: Copy-Item -Path build/Release/CrossPlatformMdlExporter.exe -Destination CrossPlatformMdlExporter-windows.exe -Force
 
       - name: Configure (Linux/macOS)
         if: runner.os != 'Windows'
@@ -37,15 +37,15 @@ jobs:
         if: runner.os != 'Windows'
         run: cmake --build build
 
-      - name: Package (Linux/macOS)
+      - name: Stage artifact (Linux/macOS)
         if: runner.os != 'Windows'
-        run: zip -j CrossPlatformMdlExporter-${{ runner.os }}.zip build/CrossPlatformMdlExporter
+        run: cp build/CrossPlatformMdlExporter CrossPlatformMdlExporter-${{ runner.os }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: CrossPlatformMdlExporter-${{ runner.os }}
-          path: CrossPlatformMdlExporter-*.zip
+          path: CrossPlatformMdlExporter-*
           if-no-files-found: error
 
   release:
@@ -61,6 +61,13 @@ jobs:
           pattern: CrossPlatformMdlExporter-*
           merge-multiple: true
           path: dist
+
+      - name: Package release zips
+        run: |
+          cd dist
+          zip -j CrossPlatformMdlExporter-windows.zip CrossPlatformMdlExporter-windows.exe
+          zip -j CrossPlatformMdlExporter-Linux.zip CrossPlatformMdlExporter-Linux
+          zip -j CrossPlatformMdlExporter-macOS.zip CrossPlatformMdlExporter-macOS
 
       - name: Create draft release
         uses: softprops/action-gh-release@v2
